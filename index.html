@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Oussama BOULAZAIB | Géomaticien</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --sidebar-bg: #1e293b;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --gold: #fbbf24; /* Nouvelle couleur pour les certificats */
+            --border: #334155;
+        }
+
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            font-family: 'Roboto', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        #app-container { display: flex; height: 100vh; width: 100vw; }
+
+        /* --- SIDEBAR --- */
+        #sidebar {
+            width: 420px; /* Légèrement élargi pour le contenu */
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.4);
+        }
+
+        .sidebar-header { padding: 20px 25px; border-bottom: 1px solid var(--border); background: rgba(15, 23, 42, 0.5); }
+        .sidebar-header h1 { font-family: 'Rajdhani', sans-serif; font-size: 26px; margin: 0; color: white; text-transform: uppercase; letter-spacing: 1px; }
+        .sidebar-header h2 { font-family: 'Rajdhani', sans-serif; font-size: 16px; margin: 5px 0 0 0; color: var(--accent); }
+
+        .scrollable-content { 
+            padding: 0 25px 25px 25px; 
+            overflow-y: auto; 
+            flex-grow: 1; 
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: var(--border) var(--sidebar-bg);
+        }
+        
+        /* Custom Scrollbar Webkit */
+        .scrollable-content::-webkit-scrollbar { width: 6px; }
+        .scrollable-content::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 3px; }
+
+        .section-title {
+            font-family: 'Rajdhani', sans-serif; font-size: 15px; text-transform: uppercase; font-weight: 700;
+            color: var(--text-muted); border-bottom: 1px solid var(--border);
+            padding-bottom: 5px; margin-top: 30px; margin-bottom: 15px; letter-spacing: 1px;
+        }
+
+        .contact-info { margin-top: 20px; }
+        .contact-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 13px; color: #cbd5e1; }
+        .contact-item i { width: 25px; color: var(--accent); text-align: center; margin-right: 5px; }
+
+        p.bio { font-size: 13px; line-height: 1.5; color: #cbd5e1; text-align: justify; margin-bottom: 0; }
+
+        /* --- PARCOURS (TIMELINE) --- */
+        .timeline-item {
+            padding: 10px 12px; margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--border);
+            border-radius: 0 4px 4px 0;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .timeline-item:hover {
+            background: rgba(56, 189, 248, 0.08);
+            border-left-color: var(--accent);
+            padding-left: 18px; /* Petit mouvement */
+        }
+        .timeline-title { font-weight: 500; font-family: 'Rajdhani', sans-serif; font-size: 15px; color: white; }
+        .timeline-company { font-size: 12px; color: var(--accent); margin-bottom: 2px;}
+        .timeline-date { font-size: 11px; color: var(--text-muted); font-style: italic;}
+
+        /* --- COMPÉTENCES --- */
+        .skills-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .skill-tag {
+            background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2);
+            color: var(--accent); padding: 3px 8px; border-radius: 3px; font-size: 11px; font-family: 'Rajdhani', sans-serif; font-weight: 600;
+        }
+
+        /* --- NOUVEAU : CERTIFICATIONS --- */
+        .cert-list { list-style: none; padding: 0; margin: 0; }
+        .cert-item { 
+            display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 13px; color: #e2e8f0;
+        }
+        .cert-item i { 
+            color: var(--gold); margin-right: 10px; margin-top: 3px; font-size: 12px;
+        }
+        .cert-name { font-weight: 400; }
+        .cert-org { display: block; font-size: 11px; color: var(--text-muted); }
+
+        /* --- NOUVEAU : LANGUES --- */
+        .lang-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .lang-item { 
+            background: rgba(255,255,255,0.05); text-align: center; padding: 8px; border-radius: 4px; 
+            font-size: 13px; font-weight: 500; border: 1px solid transparent;
+        }
+        .lang-item:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* --- CARTE --- */
+        #map { flex-grow: 1; background: #0f172a; }
+
+        @media (max-width: 768px) {
+            #app-container { flex-direction: column-reverse; }
+            #sidebar { width: 100%; height: 50vh; }
+            #map { height: 50vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h1>Oussama BOULAZAIB</h1>
+                <h2>Géomaticien @Datakad</h2>
+            </div>
+
+            <div class="scrollable-content">
+                <div class="contact-info">
+                    <div class="contact-item"><i class="fas fa-envelope"></i> Oboulazaib@gmail.com</div>
+                    <div class="contact-item"><i class="fas fa-phone"></i> +212 48 80 81 03</div>
+                    <div class="contact-item"><i class="fas fa-map-marker-alt"></i> Rabat, Maroc</div>
+                </div>
+
+                <div class="section-title">Profil</div>
+                <p class="bio">Géomaticien spécialisé en WebMapping et analyse spatiale. Expert en chaînes de production (QA/QC) et développement d'outils SIG.</p>
+
+                <div class="section-title">Expériences & Éducation</div>
+                <div id="timeline-container">
+                    </div>
+
+                <div class="section-title">Certifications & Formations</div>
+                <ul class="cert-list">
+                    <li class="cert-item">
+                        <i class="fas fa-certificate"></i>
+                        <div>
+                            <span class="cert-name">Spatial Data Science</span>
+                            <span class="cert-org">ESRI | The New Frontier in Analytics</span>
+                        </div>
+                    </li>
+                    <li class="cert-item">
+                        <i class="fas fa-certificate"></i>
+                        <div>
+                            <span class="cert-name">Imagery in Action</span>
+                            <span class="cert-org">ESRI Certification</span>
+                        </div>
+                    </li>
+                    <li class="cert-item">
+                        <i class="fas fa-code"></i>
+                        <div>
+                            <span class="cert-name">Dev Web pour les SIG</span>
+                            <span class="cert-org">GeoSteps Academy</span>
+                        </div>
+                    </li>
+                    <li class="cert-item">
+                        <i class="fas fa-satellite"></i>
+                        <div>
+                            <span class="cert-name">Traitement d'images (ENVI/ArcGIS)</span>
+                            <span class="cert-org">Formation Spécialisée</span>
+                        </div>
+                    </li>
+                    <li class="cert-item">
+                        <i class="fas fa-map"></i>
+                        <div>
+                            <span class="cert-name">Cartography & Spatial Analysis</span>
+                            <span class="cert-org">ESRI | Going Places</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="section-title">Stack Technique</div>
+                <div class="skills-container">
+                    <span class="skill-tag">JavaScript / JQuery</span>
+                    <span class="skill-tag">Leaflet / Turf.js</span>
+                    <span class="skill-tag">HTML5 / CSS3</span>
+                    <span class="skill-tag">PostgreSQL / PostGIS</span>
+                    <span class="skill-tag">Python / ArcPy</span>
+                    <span class="skill-tag">QGIS / ArcGIS</span>
+                    <span class="skill-tag">Trimble Inpho</span>
+                </div>
+
+                <div class="section-title">Langues</div>
+                <div class="lang-grid">
+                    <div class="lang-item">Arabe</div>
+                    <div class="lang-item">Français</div>
+                    <div class="lang-item">Anglais</div>
+                </div>
+
+            </div>
+        </aside>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // 1. INITIALISATION CARTE
+        const map = L.map('map', { center: [34.05, -6.75], zoom: 10, zoomControl: false });
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; CARTO &copy; OSM'
+        }).addTo(map);
+
+        // 2. DONNÉES DU CV (Map & Timeline)
+        const cvData = [
+            { id: 1, title: "Dessinateur / Géomaticien", company: "DATAKAD", type: "job", coords: [34.020882, -6.841650], dates: "2023 - Actuel", description: "Assainissement, réseaux électriques (Alafu/Atlas), QA/QC orthophotos, Pointage SNCF.", stack: ["QGIS", "Trimble", "Atlas"] },
+            { id: 2, title: "Stage SIG & Photogrammétrie", company: "SEPRET", type: "internship", coords: [34.015000, -6.830000], dates: "Août 2023 - Sept 2023", description: "Traitement photogrammétrique, orthophotos et systèmes d'information géographique.", stack: ["Photogrammétrie", "SIG"] },
+            { id: 3, title: "Master Géomatique Appliquée", company: "Univ. Ibn Tofail", type: "education", coords: [34.261014, -6.580206], dates: "2021 - 2023", description: "Formation approfondie en géomatique, télédétection et sciences de l'information géographique.", stack: ["Master", "Recherche"] },
+            { id: 4, title: "Stage Topo & SIG", company: "AMINE INVEST", type: "internship", coords: [33.917166, -6.923804], dates: "Fév 2022 - Juil 2022", description: "Service Topographie. Travaux de bureau : dessin technique et calculs topométriques.", stack: ["Autocad", "Covadis"] }
+        ];
+
+        // 3. LOGIQUE D'AFFICHAGE
+        const markers = {}; 
+        const timelineContainer = document.getElementById('timeline-container');
+
+        function getColor(type) {
+            return type === 'job' ? '#38bdf8' : type === 'education' ? '#f472b6' : '#34d399';
+        }
+        function getIcon(type) {
+            return type === 'job' ? 'fa-briefcase' : type === 'education' ? 'fa-graduation-cap' : 'fa-map-pin';
+        }
+
+        cvData.forEach(item => {
+            // Marker
+            const marker = L.circleMarker(item.coords, {
+                radius: 10, fillColor: getColor(item.type), color: "#fff", weight: 2, fillOpacity: 0.9
+            }).addTo(map);
+
+            const popupHTML = `
+                <div style="font-family: 'Roboto', sans-serif; min-width: 200px; color: #333;">
+                    <h3 style="margin: 0; color: ${getColor(item.type)}; font-family: 'Rajdhani', sans-serif; font-size: 18px; border-bottom: 2px solid ${getColor(item.type)}; padding-bottom: 5px;">${item.company}</h3>
+                    <div style="font-weight: 700; font-size: 13px; margin: 8px 0 5px 0;">${item.title}</div>
+                    <div style="font-size: 12px; color: #666; margin-bottom: 8px;"><i class="far fa-calendar-alt"></i> ${item.dates}</div>
+                    <p style="margin: 0; font-size: 13px; line-height: 1.4;">${item.description}</p>
+                </div>
+            `;
+            marker.bindPopup(popupHTML);
+            markers[item.id] = marker;
+
+            // Timeline Item
+            const timelineItem = document.createElement('div');
+            timelineItem.className = 'timeline-item';
+            timelineItem.innerHTML = `
+                <div class="timeline-title"><i class="fas ${getIcon(item.type)}" style="color: ${getColor(item.type)}; margin-right: 8px;"></i>${item.company}</div>
+                <div class="timeline-company">${item.title}</div>
+                <div class="timeline-date">${item.dates}</div>
+            `;
+
+            timelineItem.addEventListener('click', () => {
+                map.flyTo(item.coords, 14, { duration: 1.5 });
+                setTimeout(() => { markers[item.id].openPopup(); }, 1500);
+            });
+
+            timelineContainer.appendChild(timelineItem);
+        });
+    </script>
+</body>
+</html>
