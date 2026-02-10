@@ -12,114 +12,87 @@
     <style>
         :root {
             --bg-dark: #0f172a;
-            --sidebar-bg: #1e293b;
+            --sidebar-bg: rgba(30, 41, 59, 0.98);
             --text-main: #e2e8f0;
             --text-muted: #94a3b8;
-            --accent: #38bdf8;
-            --gold: #fbbf24; /* Nouvelle couleur pour les certificats */
+            --accent: #38bdf8; /* Cyan Tech */
+            --gold: #fbbf24;
             --border: #334155;
         }
 
-        body, html { 
-            margin: 0; padding: 0; height: 100%; 
-            font-family: 'Roboto', sans-serif; 
-            background-color: var(--bg-dark); 
-            color: var(--text-main);
-            overflow: hidden;
-        }
-
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Roboto', sans-serif; background-color: var(--bg-dark); color: var(--text-main); overflow: hidden; }
         #app-container { display: flex; height: 100vh; width: 100vw; }
 
         /* --- SIDEBAR --- */
         #sidebar {
-            width: 420px; /* Légèrement élargi pour le contenu */
+            width: 420px;
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-            box-shadow: 4px 0 24px rgba(0,0,0,0.4);
+            display: flex; flex-direction: column; z-index: 1000;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.5);
         }
 
-        .sidebar-header { padding: 20px 25px; border-bottom: 1px solid var(--border); background: rgba(15, 23, 42, 0.5); }
-        .sidebar-header h1 { font-family: 'Rajdhani', sans-serif; font-size: 26px; margin: 0; color: white; text-transform: uppercase; letter-spacing: 1px; }
-        .sidebar-header h2 { font-family: 'Rajdhani', sans-serif; font-size: 16px; margin: 5px 0 0 0; color: var(--accent); }
-
-        .scrollable-content { 
-            padding: 0 25px 25px 25px; 
-            overflow-y: auto; 
-            flex-grow: 1; 
-            scrollbar-width: thin; /* Firefox */
-            scrollbar-color: var(--border) var(--sidebar-bg);
+        /* Header (Sans Photo) */
+        .sidebar-header { 
+            padding: 30px 25px; border-bottom: 1px solid var(--border); 
+            background: linear-gradient(180deg, rgba(15,23,42,1) 0%, rgba(30,41,59,0) 100%);
+            text-align: left; /* Alignement gauche pour un look dashboard */
         }
+        .sidebar-header h1 { font-family: 'Rajdhani', sans-serif; font-size: 28px; margin: 0; color: white; text-transform: uppercase; letter-spacing: 2px; }
+        .sidebar-header h2 { font-family: 'Rajdhani', sans-serif; font-size: 16px; margin: 5px 0 0 0; color: var(--accent); display: inline-block; }
+
+        .contact-info { margin-top: 15px; display: flex; gap: 15px; font-size: 14px; }
+        .contact-icon { color: var(--text-muted); transition: color 0.3s; cursor: pointer; display: flex; align-items: center; gap: 5px; text-decoration: none;}
+        .contact-icon:hover { color: var(--accent); }
+
+        .scrollable-content { padding: 0 25px 25px 25px; overflow-y: auto; flex-grow: 1; }
         
-        /* Custom Scrollbar Webkit */
-        .scrollable-content::-webkit-scrollbar { width: 6px; }
-        .scrollable-content::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 3px; }
-
-        .section-title {
-            font-family: 'Rajdhani', sans-serif; font-size: 15px; text-transform: uppercase; font-weight: 700;
-            color: var(--text-muted); border-bottom: 1px solid var(--border);
-            padding-bottom: 5px; margin-top: 30px; margin-bottom: 15px; letter-spacing: 1px;
+        /* Titres de section style "Système" */
+        .section-title { 
+            font-family: 'Rajdhani', sans-serif; font-size: 14px; text-transform: uppercase; font-weight: 700; 
+            color: var(--text-muted); border-bottom: 1px solid var(--border); 
+            padding-bottom: 5px; margin-top: 30px; margin-bottom: 15px; letter-spacing: 1px; 
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .contact-info { margin-top: 20px; }
-        .contact-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 13px; color: #cbd5e1; }
-        .contact-item i { width: 25px; color: var(--accent); text-align: center; margin-right: 5px; }
-
-        p.bio { font-size: 13px; line-height: 1.5; color: #cbd5e1; text-align: justify; margin-bottom: 0; }
-
-        /* --- PARCOURS (TIMELINE) --- */
-        .timeline-item {
-            padding: 10px 12px; margin-bottom: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 3px solid var(--border);
-            border-radius: 0 4px 4px 0;
-            cursor: pointer; transition: all 0.2s ease;
+        /* Timeline */
+        .timeline-item { 
+            padding: 12px 15px; margin-bottom: 10px; 
+            background: rgba(255, 255, 255, 0.03); 
+            border-left: 3px solid var(--border); 
+            cursor: pointer; transition: all 0.2s ease; 
         }
-        .timeline-item:hover {
-            background: rgba(56, 189, 248, 0.08);
-            border-left-color: var(--accent);
-            padding-left: 18px; /* Petit mouvement */
+        .timeline-item:hover, .timeline-item.active { 
+            background: rgba(56, 189, 248, 0.1); 
+            border-left-color: var(--accent); 
+            transform: translateX(5px);
         }
-        .timeline-title { font-weight: 500; font-family: 'Rajdhani', sans-serif; font-size: 15px; color: white; }
-        .timeline-company { font-size: 12px; color: var(--accent); margin-bottom: 2px;}
-        .timeline-date { font-size: 11px; color: var(--text-muted); font-style: italic;}
+        .timeline-company { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 16px; color: white; }
+        .timeline-role { font-size: 13px; color: var(--accent); margin-bottom: 2px; }
+        .timeline-date { font-size: 11px; color: var(--text-muted); font-style: italic; }
 
-        /* --- COMPÉTENCES --- */
+        /* Skills Interactifs */
         .skills-container { display: flex; flex-wrap: wrap; gap: 6px; }
         .skill-tag {
             background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2);
-            color: var(--accent); padding: 3px 8px; border-radius: 3px; font-size: 11px; font-family: 'Rajdhani', sans-serif; font-weight: 600;
+            color: var(--accent); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-family: 'Rajdhani', sans-serif; font-weight: 600; cursor: crosshair; transition: all 0.2s;
         }
+        .skill-tag:hover { background: var(--accent); color: var(--bg-dark); box-shadow: 0 0 10px var(--accent); }
 
-        /* --- NOUVEAU : CERTIFICATIONS --- */
-        .cert-list { list-style: none; padding: 0; margin: 0; }
-        .cert-item { 
-            display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 13px; color: #e2e8f0;
-        }
-        .cert-item i { 
-            color: var(--gold); margin-right: 10px; margin-top: 3px; font-size: 12px;
-        }
-        .cert-name { font-weight: 400; }
-        .cert-org { display: block; font-size: 11px; color: var(--text-muted); }
-
-        /* --- NOUVEAU : LANGUES --- */
+        /* Certifs */
+        .cert-item { display: flex; align-items: flex-start; margin-bottom: 12px; font-size: 13px; color: #e2e8f0; }
+        .cert-item i { color: var(--gold); margin-right: 12px; margin-top: 3px; font-size: 14px; }
+        
+        /* Langues */
         .lang-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .lang-item { 
-            background: rgba(255,255,255,0.05); text-align: center; padding: 8px; border-radius: 4px; 
-            font-size: 13px; font-weight: 500; border: 1px solid transparent;
+            background: rgba(255,255,255,0.05); text-align: center; padding: 6px; border-radius: 4px; 
+            font-size: 12px; font-weight: 500; border: 1px solid transparent; color: var(--text-muted);
         }
-        .lang-item:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* --- CARTE --- */
         #map { flex-grow: 1; background: #0f172a; }
 
-        @media (max-width: 768px) {
-            #app-container { flex-direction: column-reverse; }
-            #sidebar { width: 100%; height: 50vh; }
-            #map { height: 50vh; }
-        }
+        @media (max-width: 768px) { #app-container { flex-direction: column-reverse; } #sidebar { width: 100%; height: 50vh; } #map { height: 50vh; } }
     </style>
 </head>
 <body>
@@ -128,72 +101,43 @@
         <aside id="sidebar">
             <div class="sidebar-header">
                 <h1>Oussama BOULAZAIB</h1>
-                <h2>Géomaticien @Datakad</h2>
+                <h2>Géomaticien - Data Analyst</h2>
+                
+                <div class="contact-info">
+                    <a href="mailto:Oboulazaib@gmail.com" class="contact-icon" title="Envoyer un email"><i class="fas fa-envelope"></i> Email</a>
+                    <a href="tel:+21248808103" class="contact-icon" title="Appeler"><i class="fas fa-phone"></i> +212 6.48.80.81.03</a>
+                    <span class="contact-icon"><i class="fas fa-map-marker-alt"></i> Rabat</span>
+                </div>
             </div>
 
             <div class="scrollable-content">
-                <div class="contact-info">
-                    <div class="contact-item"><i class="fas fa-envelope"></i> Oboulazaib@gmail.com</div>
-                    <div class="contact-item"><i class="fas fa-phone"></i> +212 48 80 81 03</div>
-                    <div class="contact-item"><i class="fas fa-map-marker-alt"></i> Rabat, Maroc</div>
-                </div>
+                <div class="section-title">À Propos</div>
+                <p style="font-size: 13px; color: #cbd5e1; text-align: justify; line-height: 1.6;">
+                    Géomaticien évoluant au sein de Datakad. Expert en chaînes de production (QA/QC), développement d'outils SIG et analyse spatiale. Je combine compétences techniques (Python, SQL) et gestion de projet.
+                </p>
 
-                <div class="section-title">Profil</div>
-                <p class="bio">Géomaticien spécialisé en WebMapping et analyse spatiale. Expert en chaînes de production (QA/QC) et développement d'outils SIG.</p>
-
-                <div class="section-title">Expériences & Éducation</div>
+                <div class="section-title">Parcours <i class="fas fa-route" style="font-size:12px"></i></div>
                 <div id="timeline-container">
                     </div>
 
-                <div class="section-title">Certifications & Formations</div>
-                <ul class="cert-list">
-                    <li class="cert-item">
-                        <i class="fas fa-certificate"></i>
-                        <div>
-                            <span class="cert-name">Spatial Data Science</span>
-                            <span class="cert-org">ESRI | The New Frontier in Analytics</span>
-                        </div>
-                    </li>
-                    <li class="cert-item">
-                        <i class="fas fa-certificate"></i>
-                        <div>
-                            <span class="cert-name">Imagery in Action</span>
-                            <span class="cert-org">ESRI Certification</span>
-                        </div>
-                    </li>
-                    <li class="cert-item">
-                        <i class="fas fa-code"></i>
-                        <div>
-                            <span class="cert-name">Dev Web pour les SIG</span>
-                            <span class="cert-org">GeoSteps Academy</span>
-                        </div>
-                    </li>
-                    <li class="cert-item">
-                        <i class="fas fa-satellite"></i>
-                        <div>
-                            <span class="cert-name">Traitement d'images (ENVI/ArcGIS)</span>
-                            <span class="cert-org">Formation Spécialisée</span>
-                        </div>
-                    </li>
-                    <li class="cert-item">
-                        <i class="fas fa-map"></i>
-                        <div>
-                            <span class="cert-name">Cartography & Spatial Analysis</span>
-                            <span class="cert-org">ESRI | Going Places</span>
-                        </div>
-                    </li>
-                </ul>
-
-                <div class="section-title">Stack Technique</div>
+                <div class="section-title">Compétences Techniques <span style="font-size:10px; font-weight:400; text-transform:none">(Survolez pour filtrer la carte)</span></div>
                 <div class="skills-container">
-                    <span class="skill-tag">JavaScript / JQuery</span>
-                    <span class="skill-tag">Leaflet / Turf.js</span>
-                    <span class="skill-tag">HTML5 / CSS3</span>
-                    <span class="skill-tag">PostgreSQL / PostGIS</span>
-                    <span class="skill-tag">Python / ArcPy</span>
-                    <span class="skill-tag">QGIS / ArcGIS</span>
-                    <span class="skill-tag">Trimble Inpho</span>
+                    <span class="skill-tag" data-tech="QGIS">QGIS</span>
+                    <span class="skill-tag" data-tech="ArcGIS">ArcGIS</span>
+                    <span class="skill-tag" data-tech="Python">Python / ArcPy</span>
+                    <span class="skill-tag" data-tech="PostgreSQL">PostgreSQL / PostGIS</span>
+                    <span class="skill-tag" data-tech="WebMapping">Leaflet / JS</span>
+                    <span class="skill-tag" data-tech="Photogrammétrie">Photogrammétrie</span>
+                    <span class="skill-tag" data-tech="Trimble">Trimble Inpho</span>
+                    <span class="skill-tag" data-tech="Autocad">AutoCAD / Covadis</span>
+                    <span class="skill-tag" data-tech="QAQC">QA / QC</span>
                 </div>
+
+                <div class="section-title">Certifications</div>
+                <div class="cert-item"><i class="fas fa-certificate"></i><div><span style="display:block; font-weight:600">Spatial Data Science</span><span style="font-size:11px; color:#94a3b8">ESRI MOOC | The New Frontier in Analytics</span></div></div>
+                <div class="cert-item"><i class="fas fa-certificate"></i><div><span style="display:block; font-weight:600">Imagery in Action</span><span style="font-size:11px; color:#94a3b8">ESRI Certification</span></div></div>
+                <div class="cert-item"><i class="fas fa-code"></i><div><span style="display:block; font-weight:600">Dev Web pour SIG</span><span style="font-size:11px; color:#94a3b8">GeoSteps Academy</span></div></div>
+                <div class="cert-item"><i class="fas fa-layer-group"></i><div><span style="display:block; font-weight:600">Cartography & Spatial Analysis</span><span style="font-size:11px; color:#94a3b8">ESRI | Going Places</span></div></div>
 
                 <div class="section-title">Langues</div>
                 <div class="lang-grid">
@@ -201,7 +145,6 @@
                     <div class="lang-item">Français</div>
                     <div class="lang-item">Anglais</div>
                 </div>
-
             </div>
         </aside>
 
@@ -211,66 +154,148 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-        // 1. INITIALISATION CARTE
-        const map = L.map('map', { center: [34.05, -6.75], zoom: 10, zoomControl: false });
+        // 1. CONFIGURATION CARTE & COUCHES
+        // Fond sombre (Dark Matter)
+        const darkBasemap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; CARTO'
+        });
+
+        // Fond Satellite (Esri World Imagery)
+        const satelliteBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; Esri'
+        });
+
+        // Initialisation de la carte
+        const map = L.map('map', {
+            center: [34.05, -6.75],
+            zoom: 10,
+            zoomControl: false,
+            layers: [darkBasemap] // Par défaut
+        });
+
+        // Contrôleur de couches (Haut Droite)
+        const baseMaps = {
+            "Mode Sombre (Dark)": darkBasemap,
+            "Satellite (Orthophoto)": satelliteBasemap
+        };
+        L.control.layers(baseMaps).addTo(map);
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; CARTO &copy; OSM'
-        }).addTo(map);
-
-        // 2. DONNÉES DU CV (Map & Timeline)
+        // 2. DONNÉES DU CV 
         const cvData = [
-            { id: 1, title: "Dessinateur / Géomaticien", company: "DATAKAD", type: "job", coords: [34.020882, -6.841650], dates: "2023 - Actuel", description: "Assainissement, réseaux électriques (Alafu/Atlas), QA/QC orthophotos, Pointage SNCF.", stack: ["QGIS", "Trimble", "Atlas"] },
-            { id: 2, title: "Stage SIG & Photogrammétrie", company: "SEPRET", type: "internship", coords: [34.015000, -6.830000], dates: "Août 2023 - Sept 2023", description: "Traitement photogrammétrique, orthophotos et systèmes d'information géographique.", stack: ["Photogrammétrie", "SIG"] },
-            { id: 3, title: "Master Géomatique Appliquée", company: "Univ. Ibn Tofail", type: "education", coords: [34.261014, -6.580206], dates: "2021 - 2023", description: "Formation approfondie en géomatique, télédétection et sciences de l'information géographique.", stack: ["Master", "Recherche"] },
-            { id: 4, title: "Stage Topo & SIG", company: "AMINE INVEST", type: "internship", coords: [33.917166, -6.923804], dates: "Fév 2022 - Juil 2022", description: "Service Topographie. Travaux de bureau : dessin technique et calculs topométriques.", stack: ["Autocad", "Covadis"] }
+            { 
+                id: 1, title: "Dessinateur / Géomaticien", company: "DATAKAD", type: "job", 
+                coords: [34.020882, -6.841650], dates: "2023 - Actuel", 
+                desc: "Assainissement, réseaux électriques (Alafu/Atlas). Contrôle qualité (QA/QC) des orthophotos. Pointage SNCF.", 
+                stack: ["QGIS", "QAQC", "Trimble", "Photogrammétrie", "Python"] 
+            },
+            { 
+                id: 2, title: "Stage SIG & Photogrammétrie", company: "SEPRET", type: "internship", 
+                coords: [34.015000, -6.830000], dates: "Août 2023 - Sept 2023", 
+                desc: "Département SIG. Traitement photogrammétrique et production d'orthophotos.", 
+                stack: ["Photogrammétrie", "ArcGIS", "SIG"] 
+            },
+            { 
+                id: 3, title: "Master Géomatique Appliquée", company: "Univ. Ibn Tofail", type: "education", 
+                coords: [34.261014, -6.580206], dates: "2021 - 2023", 
+                desc: "Faculté des sciences humaines et sociales. Spécialisation en WebMapping et Télédétection.", 
+                stack: ["QGIS", "ArcGIS", "WebMapping", "PostgreSQL"] 
+            },
+            { 
+                id: 4, title: "Stage Topo & SIG", company: "AMINE INVEST", type: "internship", 
+                coords: [33.917166, -6.923804], dates: "Fév 2022 - Juil 2022", 
+                desc: "Service Topographie. Travaux de bureau sur Autocad et Covadis.", 
+                stack: ["Autocad", "Covadis", "QAQC"] 
+            }
         ];
 
-        // 3. LOGIQUE D'AFFICHAGE
-        const markers = {}; 
+        // 3. LOGIQUE D'AFFICHAGE & INTERACTIVITÉ
+        const markers = {};
         const timelineContainer = document.getElementById('timeline-container');
+        const pathCoords = []; 
 
-        function getColor(type) {
-            return type === 'job' ? '#38bdf8' : type === 'education' ? '#f472b6' : '#34d399';
-        }
-        function getIcon(type) {
-            return type === 'job' ? 'fa-briefcase' : type === 'education' ? 'fa-graduation-cap' : 'fa-map-pin';
-        }
-
+        function getColor(type) { return type === 'job' ? '#38bdf8' : type === 'education' ? '#f472b6' : '#34d399'; }
+        
+        // Boucle principale
         cvData.forEach(item => {
-            // Marker
+            // A. Création du Marker sur la carte
             const marker = L.circleMarker(item.coords, {
-                radius: 10, fillColor: getColor(item.type), color: "#fff", weight: 2, fillOpacity: 0.9
+                radius: 8, fillColor: getColor(item.type), color: "#fff", weight: 2, fillOpacity: 0.9,
+                className: `marker-${item.id}`
             }).addTo(map);
 
-            const popupHTML = `
-                <div style="font-family: 'Roboto', sans-serif; min-width: 200px; color: #333;">
-                    <h3 style="margin: 0; color: ${getColor(item.type)}; font-family: 'Rajdhani', sans-serif; font-size: 18px; border-bottom: 2px solid ${getColor(item.type)}; padding-bottom: 5px;">${item.company}</h3>
-                    <div style="font-weight: 700; font-size: 13px; margin: 8px 0 5px 0;">${item.title}</div>
-                    <div style="font-size: 12px; color: #666; margin-bottom: 8px;"><i class="far fa-calendar-alt"></i> ${item.dates}</div>
-                    <p style="margin: 0; font-size: 13px; line-height: 1.4;">${item.description}</p>
-                </div>
-            `;
-            marker.bindPopup(popupHTML);
+            const popupContent = `
+                <div style="font-family:'Roboto'; color:#333; min-width:200px">
+                    <strong style="font-family:'Rajdhani'; font-size:16px; color:${getColor(item.type)}">${item.company}</strong><br>
+                    <span style="font-size:13px; font-weight:600">${item.title}</span><br>
+                    <span style="font-size:11px; color:#666">${item.dates}</span><br>
+                    <p style="margin:5px 0 0 0; font-size:12px">${item.desc}</p>
+                </div>`;
+            marker.bindPopup(popupContent);
+            
             markers[item.id] = marker;
+            marker.itemData = item; // Stockage des données pour le filtre
+            pathCoords.push(item.coords);
 
-            // Timeline Item
-            const timelineItem = document.createElement('div');
-            timelineItem.className = 'timeline-item';
-            timelineItem.innerHTML = `
-                <div class="timeline-title"><i class="fas ${getIcon(item.type)}" style="color: ${getColor(item.type)}; margin-right: 8px;"></i>${item.company}</div>
-                <div class="timeline-company">${item.title}</div>
+            // B. Création de l'élément Timeline (Gauche)
+            const div = document.createElement('div');
+            div.className = 'timeline-item';
+            div.innerHTML = `
+                <div class="timeline-company">${item.company}</div>
+                <div class="timeline-role">${item.title}</div>
                 <div class="timeline-date">${item.dates}</div>
             `;
-
-            timelineItem.addEventListener('click', () => {
+            
+            // Interaction Clic
+            div.onclick = () => {
+                // Animation de vol vers le point
                 map.flyTo(item.coords, 14, { duration: 1.5 });
-                setTimeout(() => { markers[item.id].openPopup(); }, 1500);
+                // Ouverture popup après l'anim
+                setTimeout(() => marker.openPopup(), 1500);
+                // Highlight visuel dans la liste
+                document.querySelectorAll('.timeline-item').forEach(el => el.classList.remove('active'));
+                div.classList.add('active');
+            };
+            timelineContainer.appendChild(div);
+        });
+
+        // 4. TRAJECTOIRE (Ligne pointillée reliant les expériences)
+        const journeyLine = L.polyline(pathCoords.reverse(), { // Reverse pour ordre chrono
+            color: '#38bdf8', weight: 2, opacity: 0.3, dashArray: '5, 10', lineCap: 'round'
+        }).addTo(map);
+
+        // 5. FILTRE PAR COMPÉTENCE (Survol souris)
+        const skillTags = document.querySelectorAll('.skill-tag');
+
+        skillTags.forEach(tag => {
+            tag.addEventListener('mouseenter', (e) => {
+                const tech = e.target.getAttribute('data-tech');
+                
+                Object.values(markers).forEach(marker => {
+                    const stack = marker.itemData.stack;
+                    if (stack.includes(tech)) {
+                        // Si la compétence matche : Mise en valeur (Or/Gros)
+                        marker.setStyle({ radius: 15, fillOpacity: 1, color: '#fbbf24', weight: 3 });
+                        marker.openPopup();
+                    } else {
+                        // Sinon : On grise
+                        marker.setStyle({ radius: 5, fillOpacity: 0.2, color: '#555', weight: 1 });
+                    }
+                });
             });
 
-            timelineContainer.appendChild(timelineItem);
+            tag.addEventListener('mouseleave', () => {
+                // Reset au style par défaut
+                Object.values(markers).forEach(marker => {
+                    marker.setStyle({ 
+                        radius: 8, fillOpacity: 0.9, color: "#fff", weight: 2,
+                        fillColor: getColor(marker.itemData.type)
+                    });
+                    marker.closePopup();
+                });
+            });
         });
+
     </script>
 </body>
 </html>
